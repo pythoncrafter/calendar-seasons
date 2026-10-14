@@ -26,6 +26,10 @@ platform :ios do
       key_content: required('ASC_PRIVATE_KEY'), is_key_content_base64: false,
       duration: 1200, in_house: false
     )
+    unless Spaceship::ConnectAPI::App.find(app)
+      Spaceship::ConnectAPI::App.create(name: 'Calendar Seasons', version_string: '1.0',
+        sku: app, primary_locale: 'en-US', bundle_id: app, platforms: ['IOS'])
+    end
     signing_password = required('SIGNING_P12_PASSWORD')
     temp = Dir.mktmpdir('calendar-seasons-signing-')
     keychain = "calendar-seasons-#{SecureRandom.hex(6)}"
