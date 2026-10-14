@@ -37,7 +37,7 @@ Add these **Secrets** in the same environment:
 | Name | Value |
 |---|---|
 | `ASC_PRIVATE_KEY` | Entire `.p8` file contents, including BEGIN/END lines |
-| `SIGNING_P12_PASSWORD` | A unique random password, at least 20 characters; save it in your password manager |
+| `SIGNING_P12_PASSWORD` | Your chosen signing-file password; save it in your password manager |
 
 Do not add `SIGNING_P12_BASE64` for the first run unless you already have a reusable distribution identity. GitHub Secrets keeps these values out of the source repository. Protect your GitHub account and limit who can edit workflows or trigger the release environment.
 

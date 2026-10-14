@@ -27,7 +27,6 @@ platform :ios do
       duration: 1200, in_house: false
     )
     signing_password = required('SIGNING_P12_PASSWORD')
-    UI.user_error!('Use a unique signing-file password of at least 20 characters.') if signing_password.length < 20
     temp = Dir.mktmpdir('calendar-seasons-signing-')
     keychain = "calendar-seasons-#{SecureRandom.hex(6)}"
     password = SecureRandom.hex(32)
