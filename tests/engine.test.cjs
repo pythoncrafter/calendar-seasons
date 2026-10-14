@@ -1,0 +1,9 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const S=require('../shared/engine.js');
+test('every local month maps to correct season',()=>{for(let m=0;m<12;m++)assert.equal(S.resolve(S.normalize(),new Date(2026,m,15)),S.defaults.schedule[m]);});
+test('manual override and southern-hemisphere schedule',()=>{assert.equal(S.resolve(S.normalize({automatic:false,theme:'summer'}),new Date(2026,0,1)),'summer');const schedule=[...S.defaults.schedule.slice(6),...S.defaults.schedule.slice(0,6)];assert.equal(S.resolve(S.normalize({schedule}),new Date(2026,0,1)),'summer');});
+test('corrupt preferences fail safely',()=>{const s=S.normalize({theme:'invalid',schedule:['bad'],level:'extreme',animation:'yes',colors:{accent:'url(https://evil)',surface:'#112233'}});assert.equal(s.theme,'fall');assert.equal(s.level,'cozy');assert.equal(s.animation,true);assert.equal(s.colors.accent,null);assert.equal(s.colors.surface,'#112233');assert.equal(s.schedule.length,12);});
+test('custom colors survive season transitions and dark palettes',()=>{const s=S.normalize({colors:{accent:'#123abc'}});for(let m=0;m<12;m++){const p=S.palette(s,true,new Date(2026,m,1));assert.equal(p.accent,'#123abc');assert.match(p.surface,/^#[0-9a-f]{6}$/i);}});
+test('normalization does not share mutable defaults',()=>{const s=S.normalize();s.schedule[0]='fall';s.colors.accent='#123456';assert.equal(S.normalize().schedule[0],'winter');assert.equal(S.normalize().colors.accent,null);});
+test('custom palette text contrast',()=>{assert.equal(S.contrast('#ffffff'),'#17252c');assert.equal(S.contrast('#000000'),'#ffffff');});
+
+test('null storage and unreadable palettes fail safely',()=>{assert.equal(S.normalize(null).theme,'fall');assert.equal(S.ratio('#000000','#ffffff'),21);assert.equal(S.ratio('#112233','#112233'),1);});

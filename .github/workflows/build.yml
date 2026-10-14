@@ -1,0 +1,39 @@
+name: Build and validate
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  shared:
+    name: Shared code and Chrome package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm run build && npm test && npm run package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Chrome-extension
+          path: ../Calendar-Seasons-Chrome.zip
+          if-no-files-found: error
+  ios:
+    name: Unsigned iOS build
+    runs-on: macos-14
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/validate-macos.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iOS-simulator-build-not-for-iPhone
+          path: test-results/DerivedData/Build/Products/Debug-iphonesimulator/*.app
+          if-no-files-found: error

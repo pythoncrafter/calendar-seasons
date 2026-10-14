@@ -1,0 +1,88 @@
+# Run only on the manual, credentialed GitHub Actions release job.
+require 'tmpdir'
+require 'fileutils'
+require 'securerandom'
+require 'base64'
+require 'open3'
+
+ROOT = File.expand_path('..', __dir__)
+PROJECT = File.join(ROOT, 'safari', 'CalendarSeasons.xcodeproj')
+
+def required(name)
+  value = ENV[name]
+  UI.user_error!("Missing GitHub configuration: #{name}") if value.nil? || value.empty?
+  value
+end
+
+default_platform(:ios)
+platform :ios do
+  desc 'Build, sign and upload an internal TestFlight build; no App Store submission'
+  lane :beta do
+    sh('python3', File.join(ROOT, 'scripts', 'configure-release.py'))
+    team = required('APPLE_TEAM_ID')
+    app = required('APP_BUNDLE_ID')
+    api_key = app_store_connect_api_key(
+      key_id: required('ASC_KEY_ID'), issuer_id: required('ASC_ISSUER_ID'),
+      key_content: required('ASC_PRIVATE_KEY'), is_key_content_base64: false,
+      duration: 1200, in_house: false
+    )
+    signing_password = required('SIGNING_P12_PASSWORD')
+    UI.user_error!('Use a unique signing-file password of at least 20 characters.') if signing_password.length < 20
+    temp = Dir.mktmpdir('calendar-seasons-signing-')
+    keychain = "calendar-seasons-#{SecureRandom.hex(6)}"
+    password = SecureRandom.hex(32)
+    created = false
+    begin
+      create_keychain(name: keychain, password: password, default_keychain: false,
+                      unlock: true, timeout: 3600, lock_when_sleeps: true,
+                      add_to_search_list: true)
+      created = true
+      base_path = File.expand_path(lane_context[SharedValues::KEYCHAIN_PATH])
+      keychain_path = [base_path + '-db', base_path].find { |path| File.file?(path) }
+      UI.user_error!('Temporary signing keychain was not created.') unless keychain_path
+      if ENV['SIGNING_P12_BASE64'] && !ENV['SIGNING_P12_BASE64'].empty?
+        imported = File.join(temp, 'ImportedCertificate.p12')
+        File.binwrite(imported, Base64.strict_decode64(ENV['SIGNING_P12_BASE64'].gsub(/\s/, '')))
+        import_certificate(certificate_path: imported, certificate_password: signing_password,
+                           keychain_path: keychain_path, keychain_password: password, log_output: false)
+      end
+      get_certificates(api_key: api_key, generate_apple_certs: true,
+                       keychain_path: keychain_path, keychain_password: password,
+                       output_path: temp)
+      # Retain only an encrypted identity for future runs; never log the export command/password.
+      recovery = File.join(required('RUNNER_TEMP'), 'calendar-seasons-signing-recovery')
+      FileUtils.mkdir_p(recovery)
+      exported = File.join(recovery, 'SigningCertificate.p12')
+      _out, _err, status = Open3.capture3('security', 'export', '-k', keychain_path,
+        '-t', 'identities', '-f', 'pkcs12', '-P', signing_password, '-o', exported)
+      UI.user_error!('Unable to export the encrypted reusable signing identity.') unless status.success?
+      File.write(File.join(recovery, 'SigningCertificate.base64.txt'), Base64.strict_encode64(File.binread(exported)))
+      certificate = lane_context[SharedValues::CERT_CERTIFICATE_ID]
+      profiles = {}
+      [[app, 'Calendar Seasons'], ["#{app}.Extension", 'Calendar Seasons Extension']].each do |bundle, target|
+        profile = get_provisioning_profile(
+          api_key: api_key, app_identifier: bundle, cert_id: certificate,
+          provisioning_name: "Calendar Seasons CI #{bundle}", output_path: temp
+        )
+        name = FastlaneCore::ProvisioningProfile.parse(profile)['Name']
+        profiles[bundle] = name
+        update_code_signing_settings(
+          use_automatic_signing: false, path: PROJECT, team_id: team,
+          code_sign_identity: 'Apple Distribution', profile_name: name,
+          targets: [target], build_configurations: ['Release'], bundle_identifier: bundle
+        )
+      end
+      ipa = build_app(project: PROJECT, scheme: 'CalendarSeasons', configuration: 'Release',
+                      export_method: 'app-store', output_directory: File.join(temp, 'build'),
+                      output_name: 'CalendarSeasons.ipa',
+                      export_options: {signingStyle: 'manual', teamID: team,
+                                       provisioningProfiles: profiles})
+      upload_to_testflight(api_key: api_key, ipa: ipa,
+                           skip_waiting_for_build_processing: true,
+                           distribute_external: false)
+    ensure
+      delete_keychain(name: keychain) if created
+      FileUtils.remove_entry(temp) if File.directory?(temp)
+    end
+  end
+end
