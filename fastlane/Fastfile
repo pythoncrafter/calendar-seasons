@@ -27,8 +27,7 @@ platform :ios do
       duration: 1200, in_house: false
     )
     unless Spaceship::ConnectAPI::App.find(app)
-      Spaceship::ConnectAPI::App.create(name: 'Calendar Seasons', version_string: '1.0',
-        sku: app, primary_locale: 'en-US', bundle_id: app, platforms: ['IOS'])
+      UI.user_error!("Create the iOS app record in App Store Connect (My Apps > + > New App) for #{app}; Apple does not permit app-record creation through this API.")
     end
     signing_password = required('SIGNING_P12_PASSWORD')
     temp = Dir.mktmpdir('calendar-seasons-signing-')
