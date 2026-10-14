@@ -27,7 +27,7 @@ class ReleaseTests(unittest.TestCase):
   except ImportError:self.skipTest('Install PyYAML to parse workflow YAML.')
   for path in (ROOT/'.github/workflows').glob('*.yml'):
    workflow=yaml.load(path.read_text(),Loader=yaml.BaseLoader)
-   self.assertIn('on',workflow);self.assertEqual(workflow['permissions'],{'contents':'read'})
+   self.assertIn('on',workflow);self.assertEqual(workflow['permissions'].get('contents'),'read');self.assertTrue(set(workflow['permissions']) <= {'contents','actions'})
   release=yaml.load((ROOT/'.github/workflows/testflight.yml').read_text(),Loader=yaml.BaseLoader)
   self.assertEqual(set(release['on']),{'workflow_dispatch'})
   job=release['jobs']['release'];self.assertEqual(job['environment'],'testflight')

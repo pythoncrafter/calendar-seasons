@@ -44,6 +44,9 @@ platform :ios do
         File.binwrite(imported, Base64.strict_decode64(ENV['SIGNING_P12_BASE64'].gsub(/\s/, '')))
         import_certificate(certificate_path: imported, certificate_password: signing_password,
                            keychain_path: keychain_path, keychain_password: password, log_output: false)
+      elsif ENV['SIGNING_P12_FILE'] && File.file?(ENV['SIGNING_P12_FILE'])
+        import_certificate(certificate_path: ENV['SIGNING_P12_FILE'], certificate_password: signing_password,
+                           keychain_path: keychain_path, keychain_password: password, log_output: false)
       end
       get_certificates(api_key: api_key, generate_apple_certs: true,
                        keychain_path: keychain_path, keychain_password: password,
@@ -63,6 +66,8 @@ platform :ios do
           api_key: api_key, app_identifier: bundle, cert_id: certificate,
           provisioning_name: "Calendar Seasons CI #{bundle}", output_path: temp
         )
+        profile = lane_context[SharedValues::SIGH_PROFILE_PATH]
+        UI.user_error!('Provisioning profile was not downloaded.') unless profile && File.file?(profile)
         name = FastlaneCore::ProvisioningProfile.parse(profile)['Name']
         profiles[bundle] = name
         update_code_signing_settings(

@@ -6,8 +6,13 @@ on:
         description: 'New positive build number (must be higher than previous uploads)'
         required: true
         type: string
+      signing_run_id:
+        description: Previous run containing an encrypted signing identity (optional)
+        required: false
+        type: string
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: testflight
   cancel-in-progress: false
@@ -37,11 +42,20 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
       - run: ruby -c fastlane/Fastfile
+      - name: Reuse encrypted signing identity from a previous run
+        if: inputs.signing_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: encrypted-signing-identity
+          path: ${{ runner.temp }}/calendar-seasons-signing-import
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.signing_run_id }}
       - name: Compile, sign, and upload
         env:
           ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
           SIGNING_P12_PASSWORD: ${{ secrets.SIGNING_P12_PASSWORD }}
           SIGNING_P12_BASE64: ${{ secrets.SIGNING_P12_BASE64 }}
+          SIGNING_P12_FILE: ${{ runner.temp }}/calendar-seasons-signing-import/SigningCertificate.p12
         run: bundle exec fastlane ios beta
       - name: Retain encrypted signing identity for reuse
         if: always()
