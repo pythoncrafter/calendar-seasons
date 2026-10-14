@@ -20,10 +20,13 @@ jobs:
         with:
           node-version: '24'
       - run: npm run build && npm test && npm run package
+      - run: |
+          mkdir -p test-results/packages
+          cp ../Calendar-Seasons-Chrome.zip test-results/packages/
       - uses: actions/upload-artifact@v4
         with:
           name: Chrome-extension
-          path: ../Calendar-Seasons-Chrome.zip
+          path: test-results/packages/Calendar-Seasons-Chrome.zip
           if-no-files-found: error
   ios:
     name: Unsigned iOS build
