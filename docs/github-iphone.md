@@ -2,28 +2,13 @@
 
 You do not need to own a Mac. The included GitHub Actions jobs use a hosted macOS runner with Xcode. Standard runners for public repositories are generally free under GitHub's public-repository allowance; check your account's current Actions terms and billing settings. New accounts may require verification. Codespaces has a separate limited personal allowance—check it and keep paid spending disabled if you want a free setup.
 
-This repository now includes the workflows, not a successful cloud build or a TestFlight upload. GitHub, Apple Developer and App Store Connect setup must be completed in your own accounts. Never paste passwords, API keys or signing files into ChatGPT or public source files.
+This repository includes workflows and a successful unsigned cloud build, but no TestFlight upload. GitHub, Apple Developer and App Store Connect setup must be completed in your own accounts. Never paste passwords, API keys or signing files into ChatGPT or public source files.
 
-## 1. Put the complete project on GitHub
+## 1. Source and cloud build are ready
 
-1. In iPhone Safari, sign in to GitHub and create a **new public repository** named `calendar-seasons`. Initialize it with a README. If you already have a repository containing work, do not use the import steps below without reviewing what will be replaced.
-2. Download the latest **Calendar-Seasons-complete.zip** from this conversation to Files. In the new repository, use **Add file → Upload files** to upload that ZIP. Use Safari's Request Desktop Website if the controls are hidden. Commit the upload.
-3. Open **Code → Codespaces → Create codespace on main** (or your default branch) in the browser. On iPhone you may need desktop website mode. Check your personal free Codespaces allowance before creating it. Do not enable paid overages for this setup.
-4. In the Codespace terminal, run these commands in the new repository:
+The source files and workflows are already published at <https://github.com/pythoncrafter/calendar-seasons>. No ZIP unpacking or Codespaces terminal step is needed for this repository.
 
-   ```sh
-   unzip Calendar-Seasons-complete.zip -d /tmp/calendar-seasons-import
-   cp -R /tmp/calendar-seasons-import/calendar-seasons/. .
-   git rm Calendar-Seasons-complete.zip
-   git add shared chrome safari ios-app tests docs scripts .github fastlane Gemfile package.json README.md LICENSE .gitignore
-   git commit -m "Add Calendar Seasons and cloud build workflows"
-   git push
-   ```
-
-   The `cp` includes the hidden `.github` workflow directory. It replaces the placeholder README in this newly created repository. The source ZIP is removed from version control after import.
-5. Stop/delete the Codespace when finished so it does not consume your remaining allowance. Open the repository's **Actions** tab. **Build and validate** runs the shared tests and an unsigned iOS simulator build. Wait for both jobs to pass. An unsigned simulator artifact cannot be installed on your iPhone.
-
-If you cannot use Codespaces on your phone, someone with a computer can upload the extracted project for you, including `.github`. A GitHub ZIP upload by itself does not unpack source files or activate the workflows.
+The [verified cloud run](https://github.com/pythoncrafter/calendar-seasons/actions/runs/38563870039) passed the shared tests, created the Chrome extension artifact, and compiled the iOS app and embedded Safari extension using Xcode 26.3. The simulator artifact is not installable on an iPhone. Continue below to configure Apple signing and upload a real TestFlight build.
 
 ## 2. Register the app with Apple
 
@@ -64,7 +49,7 @@ Do not add `SIGNING_P12_BASE64` for the first run unless you already have a reus
 4. After upload, wait for Apple processing. In App Store Connect → your app → **TestFlight**, resolve any missing compliance information truthfully and add yourself as an internal tester. If you cannot use internal testing, external TestFlight testing requires Apple's beta review.
 5. Accept the invitation in the **TestFlight** iPhone app and install Calendar Seasons. Enable it in **Settings → Apps → Safari → Extensions**, allow Google Calendar, then select a theme in Safari's Page Menu.
 
-A cloud build cannot validate the current authenticated Calendar website or taps on your iPhone. Follow the manual matrix after installation. If the unsigned build or signed build fails, use the job's compiler error to fix the source before retrying. The first Apple compilation has not been run from this workspace.
+A cloud build cannot validate the current authenticated Calendar website or taps on your iPhone. Follow the manual matrix after installation. If the unsigned build or signed build fails, use the job's compiler error to fix the source before retrying. Unsigned Apple compilation passed on the hosted Mac; the signed archive/upload remains to be validated.
 
 ## 5. Keep the signing identity for later uploads
 
@@ -79,4 +64,6 @@ If you change that password, first re-encrypt the signing identity; changing onl
 
 ## Current status
 
-Workflow YAML and release configuration tests pass in the provided Linux environment. Ruby/Fastlane execution, Apple compilation, certificate issuance, and the upload have not been run here. The cloud build becomes reviewable once these files are pushed to your GitHub account and the workflow runs. No GitHub repository or Apple resource was created on your behalf in this conversation.
+Source files are published and [Build and validate](https://github.com/pythoncrafter/calendar-seasons/actions/runs/38563870039) passed on GitHub. The iOS app and Safari extension compiled with Xcode 26.3, and the embedded-extension resource check passed. Chrome’s ZIP artifact is also available in that run.
+
+Fastlane signing/API execution, certificate issuance, and TestFlight upload have not run because Apple account configuration is still required. Physical iPhone Safari activation and authenticated Calendar behavior remain untested. The repository connection permits code publication; GitHub environment/secret administration is performed by you in GitHub Settings.

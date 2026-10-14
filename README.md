@@ -13,11 +13,11 @@ A private, seasonal customization layer for the **Google Calendar website**. Fou
 
 ## iPhone-only setup with GitHub
 
-Have an Apple Developer membership but no Mac? Use the included public-repository GitHub Actions workflows to build on a hosted Mac and upload to TestFlight. Follow the [iPhone setup guide](docs/github-iphone.md). The unsigned build requires no Apple secrets; signed uploads require your own Apple account configuration. No cloud build has run yet.
+Have an Apple Developer membership but no Mac? Use the included public-repository GitHub Actions workflows to build on a hosted Mac and upload to TestFlight. Follow the [iPhone setup guide](docs/github-iphone.md). The unsigned build requires no Apple secrets; signed uploads require your own Apple account configuration. The hosted Mac build is passing; TestFlight signing/upload still needs your Apple configuration.
 
 ## Install on iPhone using Xcode
 
-Requires a Mac, Xcode 16 or newer, and an iPhone running iOS 16 or newer. This repository is generated on Linux; it has not been compiled or signed with Xcode.
+Requires a Mac, Xcode 16 or newer, and an iPhone running iOS 16 or newer. The project has compiled successfully on GitHub’s hosted Mac with Xcode 26.3. Signed physical-device installation still requires your Apple configuration.
 
 1. Extract the complete ZIP. Open `safari/CalendarSeasons.xcodeproj` in Xcode.
 2. Select the project, then **each of the two targets**. Under **Signing & Capabilities**, choose your Apple development team and replace `com.example.CalendarSeasons` with a unique identifier. Keep the extension identifier prefixed by the app identifier (for example `com.yourcompany.CalendarSeasons.Extension`). Automatic signing is enabled; no credentials or profiles are included.
@@ -56,4 +56,4 @@ bash scripts/validate-macos.sh
 
 ## Release status
 
-Chrome resources are ready for local unpacked installation. Safari source and Xcode configuration are supplied for Mac compilation and device validation. No signing, TestFlight upload, store approval, authenticated Google Calendar test, or physical-device test is claimed. See [publishing](docs/publishing.md) and [test matrix](docs/testing.md) for the remaining release gates.
+Chrome resources are ready for local unpacked installation. The Safari containing app and extension compile successfully in GitHub’s macOS workflow; signed device installation and live Safari validation remain pending. No signing, TestFlight upload, store approval, authenticated Google Calendar test, or physical-device test is claimed. See [publishing](docs/publishing.md) and [test matrix](docs/testing.md) for the remaining release gates.

@@ -1,6 +1,6 @@
 # Validation results — 2026-10-14
 
-Environment: Linux, Node 24, Python 3.12, Chromium 154. No macOS, Xcode, Safari, physical iPhone, Apple team, signing profile, or authenticated Google session was available.
+Environment: Linux, Node 24, Python 3.12, Chromium 154. Initial local checks had no macOS/Xcode. Subsequent GitHub checks compiled successfully on macOS 15 using Xcode 26.3. No physical iPhone, Apple signing credentials, or authenticated Google session was available to the agent.
 
 | Validation | Result |
 |---|---|
@@ -10,7 +10,8 @@ Environment: Linux, Node 24, Python 3.12, Chromium 154. No macOS, Xcode, Safari,
 | Chromium script/UI fixture suite | Passed: theme selection, simulated local storage, default reset, reload, DOM replacement, native event color, editable dialog, motion toggles, OS reduced motion, icon/intensity controls, narrow and landscape viewports, dark-mode media, CSS parsing |
 | Real unpacked extension activation | Blocked: Chromium administrative policy explicitly disables unpacked extension loading. No policy bypass attempted. `tests/browser.cjs` is supplied for an unrestricted development machine. |
 | Mobile Google website observation | Follow-up request succeeded (HTTP 200 after three redirects) with an iPhone Safari user agent. The response was Google Calendar sign-in, with one semantic main container and zero calendar grids. This is an unauthenticated HTTP observation, not a Safari rendering or authenticated mobile-calendar test. |
-| Safari/Xcode build and device activation | Not run; requires Mac and physical iPhone |
+| Safari/Xcode compilation | Passed on GitHub macOS 15 with Xcode 26.3; app and Safari extension compiled; embedded resource checks passed |
+| Physical iPhone activation | Not run; signed TestFlight/device build still requires Apple configuration |
 | Live calendar creation/editing/search/views | Not run; synthetic event/dialog/navigation fixtures only |
 | Signing, archive, TestFlight, store submissions | Not run; publisher credentials and review required |
 
@@ -27,3 +28,11 @@ The user confirmed that a Mac with Xcode and developer accounts are not currentl
 Added public-repository shared/unsigned macOS build jobs and a manual default-branch TestFlight workflow. Added release-configuration tests (five passing checks), workflow YAML parsing, disposable bundle-ID/build-number configuration, a Fastlane signing/upload lane, encrypted identity recovery/reuse, and an iPhone-only setup guide. Fixed both Info.plist build numbers to follow CURRENT_PROJECT_VERSION so subsequent TestFlight uploads can use new build numbers.
 
 No GitHub repository has been connected. Ruby is not installed here, so Fastlane syntax/execution and Apple signing APIs remain unverified; the workflow runs `ruby -c` before the credentialed lane. No cloud build, certificate generation, profile creation, or TestFlight upload has been performed.
+
+## Published source and successful hosted-Mac build
+
+GitHub repository-app authorization was completed. Source files and workflows were pushed to `pythoncrafter/calendar-seasons/main`. The imported ZIP was removed after the source was published. The first unsigned Mac build passed; the Chrome artifact upload path was corrected after GitHub rejected `../` in an artifact pattern. Both jobs then passed. The toolchain was updated to the newest stable Xcode on macOS 15 and both jobs passed again.
+
+Latest code build: <https://github.com/pythoncrafter/calendar-seasons/actions/runs/38563870039>, code commit `ed7ff32068ec90123c189c9ea3557cdf6c472149`. Evidence: Xcode 26.3; `BUILD SUCCEEDED`; `PASS: Apple simulator compilation and embedded-extension bundle validation.` The run includes Chrome-extension and iOS-simulator-build-not-for-iPhone artifacts. This supersedes earlier statements that no repository/cloud build was available.
+
+Signed archive, Apple signing/profile/API configuration, TestFlight upload, and physical-device/live Calendar validation remain pending. The GitHub integration does not allow environment/secret administration; those credentials must be configured in the user's GitHub Settings.

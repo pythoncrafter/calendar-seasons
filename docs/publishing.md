@@ -2,7 +2,7 @@
 
 ## Cloud builds without owning a Mac
 
-The [iPhone/GitHub guide](github-iphone.md) covers the included unsigned build and manual TestFlight workflow, Apple API-key setup, and encrypted signing-identity reuse. These workflows have not yet run in a GitHub account.
+The [iPhone/GitHub guide](github-iphone.md) covers the included unsigned build and manual TestFlight workflow, Apple API-key setup, and encrypted signing-identity reuse. The unsigned workflow passed with Xcode 26.3; the credentialed TestFlight workflow has not yet run.
 
 ## TestFlight and App Store
 
