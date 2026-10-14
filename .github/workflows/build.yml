@@ -30,10 +30,11 @@ jobs:
           if-no-files-found: error
   ios:
     name: Unsigned iOS build
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+      - run: bash scripts/select-xcode.sh
       - run: bash scripts/validate-macos.sh
       - uses: actions/upload-artifact@v4
         with:

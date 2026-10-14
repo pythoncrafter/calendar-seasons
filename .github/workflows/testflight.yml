@@ -14,7 +14,7 @@ concurrency:
 jobs:
   release:
     if: github.ref_name == github.event.repository.default_branch
-    runs-on: macos-14
+    runs-on: macos-15
     environment: testflight
     timeout-minutes: 35
     env:
@@ -29,6 +29,7 @@ jobs:
         with:
           node-version: '24'
       - run: npm run build && npm test
+      - run: bash scripts/select-xcode.sh
       - name: Check release configuration
         run: python3 scripts/configure-release.py --check
       - uses: ruby/setup-ruby@v1
