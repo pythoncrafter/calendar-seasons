@@ -13,7 +13,7 @@ A private, seasonal customization layer for the **Google Calendar website**. Fou
 
 ## iPhone-only setup with GitHub
 
-Have an Apple Developer membership but no Mac? Use the included public-repository GitHub Actions workflows to build on a hosted Mac and upload to TestFlight. Follow the [iPhone setup guide](docs/github-iphone.md). The unsigned build requires no Apple secrets; signed uploads require your own Apple account configuration. The hosted Mac build is passing; TestFlight signing/upload still needs your Apple configuration.
+Have an Apple Developer membership but no Mac? Use the included public-repository GitHub Actions workflows to build on a hosted Mac and upload to TestFlight. Follow the [iPhone setup guide](docs/github-iphone.md). The unsigned build requires no Apple secrets; signed uploads require your own Apple account configuration. The hosted Mac build is passing, and version 1.0 build 1 was successfully uploaded to App Store Connect for TestFlight. Apple processing and internal tester setup remain separate steps.
 
 ## Install on iPhone using Xcode
 
@@ -56,4 +56,4 @@ bash scripts/validate-macos.sh
 
 ## Release status
 
-Chrome resources are ready for local unpacked installation. The Safari containing app and extension compile successfully in GitHub’s macOS workflow; signed device installation and live Safari validation remain pending. No signing, TestFlight upload, store approval, authenticated Google Calendar test, or physical-device test is claimed. See [publishing](docs/publishing.md) and [test matrix](docs/testing.md) for the remaining release gates.
+Chrome resources are ready for local unpacked installation. The Safari containing app and extension compile successfully in GitHub’s macOS workflow; signed device installation and live Safari validation remain pending. Apple signing and the first TestFlight upload succeeded in the hosted workflow. No store approval, authenticated Google Calendar test, or physical-device test is claimed. See [publishing](docs/publishing.md) and [test matrix](docs/testing.md) for the remaining release gates.
