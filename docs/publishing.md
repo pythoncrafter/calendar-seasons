@@ -2,7 +2,7 @@
 
 ## Cloud builds without owning a Mac
 
-The [iPhone/GitHub guide](github-iphone.md) covers the included unsigned build and manual TestFlight workflow, Apple API-key setup, and encrypted signing-identity reuse. The unsigned workflow passed with Xcode 26.3; the credentialed TestFlight workflow has not yet run.
+The [iPhone/GitHub guide](github-iphone.md) covers the included unsigned build and manual TestFlight workflow, Apple API-key setup, and encrypted signing-identity reuse. The unsigned workflow passed with Xcode 26.3. The repository's [validation record](validation-results.md#testflight-upload-succeeded) records a successful signed upload of version 1.0 build 1. Apple processing, tester assignment, and physical-device validation are separate steps.
 
 ## TestFlight and App Store
 
