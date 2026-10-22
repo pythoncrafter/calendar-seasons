@@ -2,7 +2,7 @@
 
 You do not need to own a Mac. The included GitHub Actions jobs use a hosted macOS runner with Xcode. Standard runners for public repositories are generally free under GitHub's public-repository allowance; check your account's current Actions terms and billing settings. New accounts may require verification. Codespaces has a separate limited personal allowance—check it and keep paid spending disabled if you want a free setup.
 
-This repository includes workflows and a successful unsigned cloud build, but no TestFlight upload. GitHub, Apple Developer and App Store Connect setup must be completed in your own accounts. Never paste passwords, API keys or signing files into ChatGPT or public source files.
+This repository includes workflows, a successful unsigned cloud build, and a [recorded signed TestFlight upload](validation-results.md#testflight-upload-succeeded) of version 1.0 build 1. For the configured app, check Apple processing and tester assignment before attempting another upload. The setup below applies to a new account or app; reuse the existing signing configuration for subsequent builds. Never paste passwords, API keys or signing files into ChatGPT or public source files.
 
 ## 1. Source and cloud build are ready
 
@@ -49,7 +49,7 @@ Do not add `SIGNING_P12_BASE64` for the first run unless you already have a reus
 4. After upload, wait for Apple processing. In App Store Connect → your app → **TestFlight**, resolve any missing compliance information truthfully and add yourself as an internal tester. If you cannot use internal testing, external TestFlight testing requires Apple's beta review.
 5. Accept the invitation in the **TestFlight** iPhone app and install Calendar Seasons. Enable it in **Settings → Apps → Safari → Extensions**, allow Google Calendar, then select a theme in Safari's Page Menu.
 
-A cloud build cannot validate the current authenticated Calendar website or taps on your iPhone. Follow the manual matrix after installation. If the unsigned build or signed build fails, use the job's compiler error to fix the source before retrying. Unsigned Apple compilation passed on the hosted Mac; the signed archive/upload remains to be validated.
+A cloud build cannot validate the current authenticated Calendar website or taps on your iPhone. Follow the manual matrix after installation. If the unsigned build or signed build fails, use the job's compiler error to fix the source before retrying. Unsigned compilation and the signed archive/upload are recorded as successful; physical-device behavior remains to be validated.
 
 ## 5. Keep the signing identity for later uploads
 
@@ -66,4 +66,4 @@ If you change that password, first re-encrypt the signing identity; changing onl
 
 Source files are published and [Build and validate](https://github.com/pythoncrafter/calendar-seasons/actions/runs/38563870039) passed on GitHub. The iOS app and Safari extension compiled with Xcode 26.3, and the embedded-extension resource check passed. Chrome’s ZIP artifact is also available in that run.
 
-Fastlane signing/API execution, certificate issuance, and TestFlight upload have not run because Apple account configuration is still required. Physical iPhone Safari activation and authenticated Calendar behavior remain untested. The repository connection permits code publication; GitHub environment/secret administration is performed by you in GitHub Settings.
+The [validation record](validation-results.md#testflight-upload-succeeded) reports that run 38588034814 reused the signing identity, built/exported the IPA, and uploaded version 1.0 build 1. This is the recorded repository status, not a fresh App Store Connect account check. Apple processing and internal tester assignment remain separate; physical iPhone Safari activation and authenticated Calendar behavior remain untested. GitHub environment/secret administration is performed in GitHub Settings.
